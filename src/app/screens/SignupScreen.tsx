@@ -1,13 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, FormEvent } from 'react';
 import Link from 'next/link';
 import { auth } from '../../../firebase';
 import {
     createUserWithEmailAndPassword,
     sendEmailVerification,
     fetchSignInMethodsForEmail,
-    signInWithEmailAndPassword,
 } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
@@ -28,7 +27,7 @@ export default function SignupScreen() {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         setLoading(true);
         try {
@@ -42,12 +41,20 @@ export default function SignupScreen() {
             });
 
             router.push('/login');
-        } catch (err: any) {
-            toast.error(err.message, {
-                duration: 4000,
-                position: 'top-center',
-            });
-        } finally {
+        } catch (err: unknown) {
+            if (typeof err === 'object' && err !== null && 'message' in err) {
+                toast.error((err as { message: string }).message, {
+                    duration: 4000,
+                    position: 'top-center',
+                });
+            } else {
+                toast.error('An unexpected error occurred.', {
+                    duration: 4000,
+                    position: 'top-center',
+                });
+            }
+        }
+        finally {
             setLoading(false);
         }
     };
@@ -62,19 +69,26 @@ export default function SignupScreen() {
                 toast.error('Email not found. Please sign up.');
                 return;
             }
-            const result = await signInWithEmailAndPassword(auth, resendEmail, 'dummy');
-        } catch (error: any) {
-            if (error.code === 'auth/wrong-password') {
-                const user = auth.currentUser;
-                if (user) {
-                    await sendEmailVerification(user);
-                    toast.success('Verification email resent successfully.');
-                    setShowModal(false);
-                    return;
+        } catch (error: unknown) {
+            if (typeof error === 'object' && error !== null && 'code' in error) {
+                const err = error as { code: string; message?: string };
+
+                if (err.code === 'auth/wrong-password') {
+                    const user = auth.currentUser;
+                    if (user) {
+                        await sendEmailVerification(user);
+                        toast.success('Verification email resent successfully.');
+                        setShowModal(false);
+                        return;
+                    }
                 }
+
+                toast.error(err.message || 'An unknown error occurred.');
+            } else {
+                toast.error('An unexpected error occurred.');
             }
-            toast.error(error.message);
         }
+
     };
 
     return (

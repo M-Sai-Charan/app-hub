@@ -1,6 +1,5 @@
 'use client';
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { FormEvent, useState } from 'react';
 import Link from 'next/link';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../../firebase';
@@ -8,11 +7,10 @@ import { toast } from 'react-hot-toast';
 import { Eye, EyeOff } from 'lucide-react';
 
 export default function LoginScreen() {
-    const router = useRouter();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         try {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -23,10 +21,30 @@ export default function LoginScreen() {
                 return;
             }
             toast.success('Login successful!');
-            // router.push('/dashboard');
-        } catch (error: any) {
-            toast.error('Login failed. Check your email/password.');
+        } catch (error: unknown) {
+    if (
+        typeof error === 'object' &&
+        error !== null &&
+        'code' in error &&
+        'message' in error
+    ) {
+        const err = error as { code: string; message: string };
+
+        switch (err.code) {
+            case 'auth/user-not-found':
+                toast.error('No user found with this email.');
+                break;
+            case 'auth/wrong-password':
+                toast.error('Incorrect password.');
+                break;
+            default:
+                toast.error(err.message);
         }
+    } else {
+        toast.error('Login failed. Please try again.');
+    }
+}
+
     };
 
     return (
