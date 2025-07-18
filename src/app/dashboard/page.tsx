@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Header from "../components/Header/Header";
+import { useRouter } from 'next/navigation';
 
 const dummyUserData = {
     feedbackCount: 4,
@@ -40,7 +41,6 @@ const watchedApps = [
 
 export default function Dashboard() {
     const [username, setUsername] = useState("User");
-
     return (
         <div className="min-h-screen bg-zinc-900 text-white">
             <Header onUsernameLoaded={(name) => setUsername(name)} />
@@ -166,6 +166,7 @@ function Actions() {
         "Discover Apps",
         "Account Settings",
     ];
+    const router = useRouter();
     return (
         <div>
             <h3 className="text-xl font-semibold mb-4">⚡ Quick Actions</h3>
@@ -174,6 +175,14 @@ function Actions() {
                     <button
                         key={text}
                         className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition text-sm font-medium"
+                        onClick={() => {
+                            if (text === "Discover Apps") {
+                                router.push('/discover');
+                            } else {
+                                console.log(`${text} clicked`);
+                                // You can handle other routes or modals here
+                            }
+                        }}
                     >
                         {text}
                     </button>
