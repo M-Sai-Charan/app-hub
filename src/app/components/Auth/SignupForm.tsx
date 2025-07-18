@@ -2,7 +2,6 @@
 
 import React, { useState, FormEvent } from 'react';
 import Link from 'next/link';
-import { auth } from '../../../firebase';
 import {
     createUserWithEmailAndPassword,
     sendEmailVerification,
@@ -11,6 +10,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
 import { Eye, EyeOff } from 'lucide-react';
+import { auth } from '@/lib/firebase';
 
 export default function SignupScreen() {
     const router = useRouter();

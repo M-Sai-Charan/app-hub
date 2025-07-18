@@ -1,13 +1,13 @@
 'use client';
-
 import React, { FormEvent, useState } from 'react';
 import Link from 'next/link';
 import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
-import { auth } from '../../../firebase';
 import { toast } from 'react-hot-toast';
 import { Eye, EyeOff } from 'lucide-react';
-
+import { auth } from '@/lib/firebase';
+import { useRouter } from "next/navigation";
 export default function LoginScreen() {
+    const router = useRouter();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [resetEmail, setResetEmail] = useState('');
@@ -25,6 +25,7 @@ export default function LoginScreen() {
                 return;
             }
             toast.success('Login successful!');
+            router.push("/dashboard"); 
         } catch (error: unknown) {
             if (
                 typeof error === 'object' &&

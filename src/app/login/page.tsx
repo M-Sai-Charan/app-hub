@@ -1,7 +1,5 @@
-// src/app/login/page.tsx
-import React from 'react';
-import LoginScreen from '../screens/LoginScreen';
+import LoginForm from "../components/Auth/LoginForm";
 
 export default function LoginPage() {
-  return <LoginScreen />;
+  return <LoginForm />;
 }
