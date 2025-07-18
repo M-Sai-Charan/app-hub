@@ -165,7 +165,7 @@ function Actions() {
         {
             label: "Submit Feedback",
             icon: <FaRocket />,
-            route: "/feedback",
+            route: "/submit-feedback",
         },
         {
             label: "Track My Reports",
