@@ -1,0 +1,35 @@
+[
+  {
+    "id": "1",
+    "name": "ZPay Wallet",
+    "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3H_JALYBvplr8UFPgih5kfLyd_mlYsMGFN13V40PoRNmS0DprCGiT0y32LCtMVjSXy-0&usqp=CAU",
+    "category": "Banking",
+    "description": "India’s safest UPI & wallet payments app",
+    "openIssues": 12,
+    "upvotes": 210,
+    "claimed": true,
+    "preview": "Some transactions fail during peak hours."
+  },
+  {
+    "id": "2",
+    "name": "CineBuzz+",
+    "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRcxG07G7imc8d_msbZ2helPYuVmRmacEghCg&s",
+    "category": "OTT",
+    "description": "Your favorite movies & shows in one place",
+    "openIssues": 4,
+    "upvotes": 95,
+    "claimed": false,
+    "preview": "Subtitle delay in downloaded videos"
+  },
+  {
+    "id": "3",
+    "name": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSUjdZUbyWzK85L5-achDuC6Ecas2mK0vj9QQ&s",
+    "logo": "/logos/gamethrill.png",
+    "category": "Gaming",
+    "description": "Multiplayer mobile gaming with friends",
+    "openIssues": 8,
+    "upvotes": 150,
+    "claimed": true,
+    "preview": "Lag in ranked matches, especially evenings"
+  }
+]
