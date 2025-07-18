@@ -177,11 +177,11 @@ function Actions() {
             icon: <FaCompass />,
             route: "/discover",
         },
-        // {
-        //     label: "Account Settings",
-        //     icon: <FaUserCog />,
-        //     route: "/settings",
-        // },
+        {
+            label: "Account Settings",
+            icon: <FaUserCog />,
+            route: "/settings",
+        },
     ];
     const router = useRouter();
     return (

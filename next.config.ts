@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
     removeConsole: true,
   },
    images: {
-    domains: ['encrypted-tbn0.gstatic.com'],
+    domains: ['encrypted-tbn0.gstatic.com','ui-avatars.com', 'firebasestorage.googleapis.com'],
   },
 };
 

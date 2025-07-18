@@ -1,6 +1,7 @@
 import { initializeApp, getApps } from "firebase/app";
 import { getAuth, RecaptchaVerifier  } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
 const firebaseConfig = {
     apiKey: "AIzaSyDVPUgvbYMyTxI9UnASuwHn9uewc5kdKjM",
     authDomain: "app-hub-6119e.firebaseapp.com",
@@ -11,7 +12,7 @@ const firebaseConfig = {
     measurementId: "G-1XHKV70QXR"
 };
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-
+const storage = getStorage(app); 
 const auth = getAuth(app);
 const db = getFirestore(app);
-export { auth, db, RecaptchaVerifier  };
+export { auth, db, RecaptchaVerifier, app, storage };
