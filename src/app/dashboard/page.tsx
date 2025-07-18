@@ -170,18 +170,18 @@ function Actions() {
         {
             label: "Track My Reports",
             icon: <FaRegClipboard />,
-            route: "/reports",
+            route: "/track-my-reports",
         },
         {
             label: "Discover Apps",
             icon: <FaCompass />,
             route: "/discover",
         },
-        {
-            label: "Account Settings",
-            icon: <FaUserCog />,
-            route: "/settings",
-        },
+        // {
+        //     label: "Account Settings",
+        //     icon: <FaUserCog />,
+        //     route: "/settings",
+        // },
     ];
     const router = useRouter();
     return (
