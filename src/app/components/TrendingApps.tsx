@@ -2,6 +2,8 @@
 
 import React from 'react';
 import Image from 'next/image';
+import { FaCheckCircle, FaThumbsUp, FaRegEye } from 'react-icons/fa';
+
 const trendingApps = [
     {
         id: 1,
@@ -32,34 +34,47 @@ const trendingApps = [
 const TrendingApps = () => {
     return (
         <section className="px-4">
-            <h2 className="text-lg font-semibold text-white-800 mb-3">🔥 Trending Apps</h2>
-            <div className="flex gap-4 overflow-x-auto pb-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 px-4 mt-6">
+            <h2 className="text-lg font-semibold text-white mb-3">🔥 Trending Apps</h2>
+            <div className="flex gap-4 overflow-x-auto pb-2 px-1">
                 {trendingApps.map((app) => (
                     <div
                         key={app.id}
-                        className="min-w-[220px] bg-zinc-900 shadow rounded-lg p-4 flex-shrink-0 hover:shadow-md transition"
+                        className="bg-zinc-900 text-white rounded-lg p-4 shadow-md hover:shadow-lg transition w-full max-w-xs min-w-[240px] flex-shrink-0"
                     >
-                        <div className="w-12 h-12 rounded-full bg-white p-1">
-                            <Image
-                                src={app.logo}
-                                alt={app.name}
-                                width={48}
-                                height={48}
-                                className="rounded-full object-cover"
-                                priority
-                            />
+                        <div className="flex items-center gap-3 mb-3">
+                            <div className="w-12 h-12 rounded-full bg-white p-1">
+                                <Image
+                                    src={app.logo}
+                                    alt={app.name}
+                                    width={48}
+                                    height={48}
+                                    className="rounded-full object-cover"
+                                    priority
+                                />
+                            </div>
+                            <div className="flex-1">
+                                <h3 className="text-md font-semibold flex items-center gap-2">
+                                    {app.name}
+                                </h3>
+                                <p className="text-sm text-zinc-400">{app.category}</p>
+                            </div>
                         </div>
 
-                        <h3 className="text-md font-medium">{app.name}</h3>
-                        <p className="text-xs text-white-500 mb-1">{app.category}</p>
-                        <p className="text-sm text-white-700 line-clamp-2">{app.description}</p>
-                        <p className="mt-2 text-xs text-white-600">
-                            👍 {app.upvotes} upvotes
+                        <p className="text-sm text-zinc-300 line-clamp-2 mb-4">
+                            {app.description}
                         </p>
+
+                        <div className="flex justify-between items-center text-sm text-zinc-400">
+                            <span className="flex items-center gap-1">
+                                <FaThumbsUp className="text-yellow-400" />
+                                {app.upvotes} Upvotes
+                            </span>
+                        </div>
                     </div>
                 ))}
             </div>
         </section>
+
     );
 };
 

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Header from "../components/Header/Header";
 import { useRouter } from 'next/navigation';
+import { FaRocket, FaRegClipboard, FaCompass, FaUserCog } from 'react-icons/fa';
 
 const dummyUserData = {
     feedbackCount: 4,
@@ -161,30 +162,40 @@ function Stats() {
 
 function Actions() {
     const buttons = [
-        "Submit Feedback",
-        "Track My Reports",
-        "Discover Apps",
-        "Account Settings",
+        {
+            label: "Submit Feedback",
+            icon: <FaRocket />,
+            route: "/feedback",
+        },
+        {
+            label: "Track My Reports",
+            icon: <FaRegClipboard />,
+            route: "/reports",
+        },
+        {
+            label: "Discover Apps",
+            icon: <FaCompass />,
+            route: "/discover",
+        },
+        {
+            label: "Account Settings",
+            icon: <FaUserCog />,
+            route: "/settings",
+        },
     ];
     const router = useRouter();
     return (
         <div>
             <h3 className="text-xl font-semibold mb-4">⚡ Quick Actions</h3>
             <div className="flex flex-wrap gap-3">
-                {buttons.map((text) => (
+                {buttons.map(({ label, icon, route }) => (
                     <button
-                        key={text}
-                        className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition text-sm font-medium"
-                        onClick={() => {
-                            if (text === "Discover Apps") {
-                                router.push('/discover');
-                            } else {
-                                console.log(`${text} clicked`);
-                                // You can handle other routes or modals here
-                            }
-                        }}
+                        key={label}
+                        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition text-sm font-medium  text-left"
+                        onClick={() => router.push(route)}
                     >
-                        {text}
+                        <span className="text-lg">{icon}</span>
+                        {label}
                     </button>
                 ))}
             </div>
