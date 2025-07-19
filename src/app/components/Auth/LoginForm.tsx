@@ -1,11 +1,11 @@
 'use client';
+
 import React, { FormEvent, useState } from 'react';
 import Link from 'next/link';
-import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import { toast } from 'react-hot-toast';
 import { Eye, EyeOff } from 'lucide-react';
-import { auth } from '@/lib/firebase';
-import { useRouter } from "next/navigation";
+import { useRouter } from 'next/navigation';
+
 export default function LoginScreen() {
     const router = useRouter();
     const [email, setEmail] = useState('');
@@ -13,49 +13,88 @@ export default function LoginScreen() {
     const [resetEmail, setResetEmail] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [showForgot, setShowForgot] = useState(false);
+    const [otp, setOtp] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [step, setStep] = useState<'email' | 'otp'>('email');
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         try {
-            const userCredential = await signInWithEmailAndPassword(auth, email, password);
-            const user = userCredential.user;
+            const res = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password }),
+            });
 
-            if (!user.emailVerified) {
-                toast.error('Please verify your email before logging in.');
-                return;
-            }
-            toast.success('Login successful!');
-            router.push("/dashboard"); 
-        } catch (error: unknown) {
-            if (
-                typeof error === 'object' &&
-                error !== null &&
-                'code' in error &&
-                'message' in error
-            ) {
-                const err = error as { code: string; message: string };
-                switch (err.code) {
-                    case 'auth/user-not-found':
-                        toast.error('No user found with this email.');
-                        break;
-                    case 'auth/wrong-password':
-                        toast.error('Incorrect password.');
-                        break;
-                    default:
-                        toast.error(err.message);
-                }
+            const data = await res.json();
+
+            if (res.ok) {
+                toast.success('Login successful!');
+                localStorage.setItem('user', JSON.stringify(data.user));
+                router.push('/dashboard'); // or wherever you want to go
             } else {
-                toast.error('Login failed. Please try again.');
+                toast.error(data.message);
+            }
+        } catch (err: unknown) {
+            if (typeof err === 'object' && err !== null && 'message' in err) {
+                toast.error((err as { message: string }).message, {
+                    duration: 4000,
+                    position: 'top-center',
+                });
+            } else {
+                toast.error('An unexpected error occurred.', {
+                    duration: 4000,
+                    position: 'top-center',
+                });
             }
         }
     };
 
-    const handleForgotPassword = async () => {
+    const handleForgotStepOne = async () => {
         try {
-            await sendPasswordResetEmail(auth, resetEmail);
-            toast.success('Password reset email sent!');
+            const res = await fetch('/api/auth/request-password-reset', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: resetEmail }),
+            });
+
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message);
+
+            toast.success('Reset code sent to email!');
+            setStep('otp');
+        } catch (err: unknown) {
+            if (typeof err === 'object' && err !== null && 'message' in err) {
+                toast.error((err as { message: string }).message, {
+                    duration: 4000,
+                    position: 'top-center',
+                });
+            } else {
+                toast.error('An unexpected error occurred.', {
+                    duration: 4000,
+                    position: 'top-center',
+                });
+            }
+        }
+    };
+
+    const handleResetPassword = async () => {
+        try {
+            const res = await fetch('/api/auth/reset-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: resetEmail, otp, password: newPassword }),
+            });
+
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message);
+
+            toast.success('Password reset successful!');
             setShowForgot(false);
             setResetEmail('');
+            setOtp('');
+            setNewPassword('');
+            setStep('email');
         } catch (err: unknown) {
             if (typeof err === 'object' && err !== null && 'message' in err) {
                 toast.error((err as { message: string }).message, {
@@ -83,9 +122,7 @@ export default function LoginScreen() {
                 {!showForgot ? (
                     <form onSubmit={handleSubmit} className="space-y-5">
                         <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                                Email Address
-                            </label>
+                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
                             <input
                                 id="email"
                                 type="email"
@@ -93,14 +130,11 @@ export default function LoginScreen() {
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 text-gray-800"
-                                placeholder="you@example.com"
                             />
                         </div>
 
                         <div>
-                            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                                Password
-                            </label>
+                            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
                             <div className="relative">
                                 <input
                                     id="password"
@@ -109,7 +143,6 @@ export default function LoginScreen() {
                                     onChange={(e) => setPassword(e.target.value)}
                                     required
                                     className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 text-gray-800"
-                                    placeholder="••••••••"
                                 />
                                 <button
                                     type="button"
@@ -132,38 +165,63 @@ export default function LoginScreen() {
                             </button>
                         </div>
 
-                        <button
-                            type="submit"
-                            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition duration-300"
-                        >
-                            Sign In
-                        </button>
+                        <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition duration-300"
+                        >Sign In</button>
                     </form>
                 ) : (
-                    <div className="space-y-4">
-                        <h2 className="text-lg font-semibold text-center text-gray-700">
-                            Reset Your Password
-                        </h2>
-                        <input
-                            type="email"
-                            value={resetEmail}
-                            onChange={(e) => setResetEmail(e.target.value)}
-                            placeholder="Enter your email"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-800"
-                        />
-                        <button
-                            onClick={handleForgotPassword}
-                            className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg"
-                        >
-                            Send Reset Email
-                        </button>
-                        <button
-                            onClick={() => setShowForgot(false)}
-                            className="w-full text-sm text-gray-600 hover:underline text-center mt-2"
-                        >
-                            Back to login
-                        </button>
-                    </div>
+                    <>
+                        {step === 'email' && (
+                            <div className="space-y-4">
+                                <h2 className="text-3xl font-bold text-center text-gray-800 mb-2">Reset Your Password</h2>
+                                <input
+                                    type="email"
+                                    value={resetEmail}
+                                    onChange={(e) => setResetEmail(e.target.value)}
+                                    placeholder="Enter your email"
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 text-gray-800"
+                                />
+                                <button onClick={handleForgotStepOne} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition duration-300">
+                                    Send Reset Code
+                                </button>
+                                <button onClick={() => setShowForgot(false)} className="text-sm text-gray-600 hover:underline text-center w-full mt-2">
+                                    Back to login
+                                </button>
+                            </div>
+                        )}
+
+                        {step === 'otp' && (
+                            <div className="space-y-4">
+                                <input
+                                    type="text"
+                                    maxLength={6}
+                                    value={otp}
+                                    onChange={(e) => setOtp(e.target.value)}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 text-gray-800"
+                                    placeholder="Enter OTP"
+                                />
+                                <div className="relative">
+                                    <input
+                                        type={showPassword ? 'text' : 'password'}
+                                        value={newPassword}
+                                        onChange={(e) => setNewPassword(e.target.value)}
+                                        placeholder="New password"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 text-gray-800"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword((prev) => !prev)}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                                        tabIndex={-1}
+                                    >
+                                        {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                                    </button>
+                                </div>
+                                <button onClick={handleResetPassword} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition duration-300">
+                                    Reset Password
+                                </button>
+                            </div>
+                        )}
+                    </>
                 )}
 
                 <p className="mt-6 text-center text-sm text-gray-600">
