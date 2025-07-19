@@ -23,7 +23,7 @@ export async function POST(req: Request) {
 
   await Otp.create({
     email,
-    otp: otpCode,
+    code: otpCode,
     expiresAt: new Date(Date.now() + 5 * 60 * 1000), // 5 min
   });
 

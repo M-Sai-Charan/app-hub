@@ -15,7 +15,7 @@ export default function SignupScreen() {
         password: '',
     });
 
-    const [otp, setOtp] = useState('');
+    const [code, setOtp] = useState('');
     const [otpSent, setOtpSent] = useState(false);
     const [loading, setLoading] = useState(false);
     const [timer, setTimer] = useState(180); // 3 minutes
@@ -66,7 +66,7 @@ export default function SignupScreen() {
     };
 
     const handleVerifyOtp = async () => {
-        if (otp.length !== 6) {
+        if (code.length !== 6) {
             toast.error('Enter valid 6-digit OTP');
             return;
         }
@@ -75,7 +75,7 @@ export default function SignupScreen() {
             const res = await fetch('/api/auth/verify-otp', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: form.email, otp }),
+                body: JSON.stringify({ email: form.email, code }),
             });
 
             const data = await res.json();
@@ -177,7 +177,7 @@ export default function SignupScreen() {
                         <input
                             type="text"
                             maxLength={6}
-                            value={otp}
+                            value={code}
                             onChange={(e) => setOtp(e.target.value)}
 
                             className="w-full px-4 py-2 border text-center  border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-800"

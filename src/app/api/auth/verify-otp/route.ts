@@ -4,11 +4,11 @@ import { connectToDB } from '@/models/mongodb';
 import User from '@/models/User';
 
 export async function POST(req: Request) {
-  const { email, otp } = await req.json();
+  const { email, code } = await req.json();
 
   await connectToDB();
 
-  const validOtp = await Otp.findOne({ email, otp });
+  const validOtp = await Otp.findOne({ email, code });
   if (!validOtp || validOtp.expiresAt < new Date()) {
     return NextResponse.json({ message: 'Invalid or expired OTP' }, { status: 400 });
   }

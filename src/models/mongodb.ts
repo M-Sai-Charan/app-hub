@@ -1,22 +1,14 @@
 import mongoose from 'mongoose';
-
 const MONGODB_URI = process.env.MONGODB_URI as string;
-
 if (!MONGODB_URI) throw new Error('Please define the MONGODB_URI');
-
 interface MongooseCache {
   conn: typeof mongoose | null;
   promise: Promise<typeof mongoose> | null;
 }
-
-// Attach custom type to global object
 declare global {
   var mongoose: MongooseCache | undefined;
 }
-
-// Use const instead of let
 const cached: MongooseCache = global.mongoose || { conn: null, promise: null };
-
 export async function connectToDB() {
   if (cached.conn) return cached.conn;
 
