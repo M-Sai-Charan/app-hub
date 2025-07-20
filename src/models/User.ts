@@ -10,6 +10,14 @@ export interface IUser extends Document {
 
   resetPasswordOtp?: string;         // 🔒 Password Reset OTP
   resetPasswordOtpExpiry?: Date;     // 🔒 Password Reset OTP Expiry
+
+   avatar?: string;
+  phone?: string;
+  bio?: string;
+  gender?: string;
+  occupation?: string;
+  socialLinks?: string[];
+  dailyApps?: string[];
 }
 
 const UserSchema = new Schema<IUser>({
@@ -24,6 +32,14 @@ const UserSchema = new Schema<IUser>({
   // 🆕 Added these two lines
   resetPasswordOtp: String,
   resetPasswordOtpExpiry: Date,
+
+   avatar: { type: String, required: true },
+  phone: { type: String, required: true },
+  bio: { type: String, required: true },
+  gender: { type: String, required: true },
+  occupation: { type: String, required: true },
+  socialLinks:[String],
+  dailyApps:[String],
 });
 
 export default mongoose.models.User || mongoose.model<IUser>('User', UserSchema);
