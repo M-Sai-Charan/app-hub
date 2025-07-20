@@ -86,9 +86,19 @@ export default function ProfilePage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message);
       toast.success('Profile updated!');
-    } catch (err: any) {
-      toast.error(err.message || 'Error updating profile');
-    } finally {
+    } catch (err: unknown) {
+            if (typeof err === 'object' && err !== null && 'message' in err) {
+                toast.error((err as { message: string }).message, {
+                    duration: 4000,
+                    position: 'top-center',
+                });
+            } else {
+                toast.error('An unexpected error occurred.', {
+                    duration: 4000,
+                    position: 'top-center',
+                });
+            }
+        } finally {
       setLoading(false);
     }
   };
